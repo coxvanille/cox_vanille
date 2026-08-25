@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Réservation - Prestation</title>
+    <title>cox_vanille — Location Coccinelle Vintage 1967 pour Mariage</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -11,134 +12,238 @@
             theme: {
                 extend: {
                     colors: {
-                        coxDark: '#1c1917'
+                        coxDark: '#2C221E',
+                        coxCream: '#FDFBF7',
+                        coxCreamDark: '#F5EFE6',
+                        coxYellow: '#EAB308',
+                        coxYellowHover: '#CA8A04'
                     }
                 }
             }
         }
     </script>
-    <!-- Supabase JS Client CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FDFBF7; color: #2C221E; }
+        /* Animation pour le toast */
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(1rem); }
-            to { opacity: 1; transform: translateY(0); }
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
-        .toast-animate {
-            animation: slideUp 0.3s ease-out forwards;
-        }
+        .toast-animate { animation: slideUp 0.3s ease-out forwards; }
     </style>
 </head>
-<body class="bg-stone-50 text-stone-800 antialiased selection:bg-amber-800 selection:text-white">
+<body class="bg-coxCream text-coxDark antialiased">
 
-    <!-- HEADER & NAVIGATION -->
-    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-stone-200">
-        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-            <!-- Logo secret (Cliquer 5 fois dessus ouvre l'accès admin) -->
-            <a href="#" id="secretLogoTrigger" class="font-serif text-2xl font-bold tracking-tight text-coxDark">
-                MonLogo<span class="text-amber-700">.</span>
+    <!-- NAV -->
+    <nav class="fixed top-0 w-full bg-coxCream/90 backdrop-blur-md z-50 border-b border-amber-900/10 transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+            
+            <!-- Logo déclencheur secret (5 clics) -->
+            <a href="#" id="secretLogoTrigger" class="flex flex-col items-center hover:scale-105 transition duration-300 py-1">
+                <img src="logo.png" alt="Cox Vanille Logo" class="w-16 h-auto object-contain mb-1">
+                <span class="font-serif text-sm font-bold tracking-wide text-stone-800">cox<span class="text-amber-600 font-normal italic">_vanille</span></span>
             </a>
 
-            <!-- Navigation Desktop -->
-            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-stone-600">
-                <a href="#booking" class="hover:text-amber-800 transition">Réserver</a>
-                <a href="#reviews" class="hover:text-amber-800 transition">Avis</a>
-            </nav>
-
-            <!-- Bouton Menu Mobile -->
-            <button id="mobileMenuBtn" class="md:hidden p-2 text-stone-600 focus:outline-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-            </button>
-        </div>
-
-        <!-- Menu Mobile Dropdown -->
-        <div id="mobileMenu" class="hidden md:hidden bg-white border-b border-stone-200 px-6 py-4 space-y-3">
-            <a href="#booking" class="mobile-link block text-stone-600 hover:text-amber-800 font-medium">Réserver</a>
-            <a href="#reviews" class="mobile-link block text-stone-600 hover:text-amber-800 font-medium">Avis</a>
-        </div>
-    </header>
-
-    <!-- SECTION PRINCIPALE -->
-    <main class="max-w-4xl mx-auto px-6 py-16 space-y-24">
-
-        <!-- FORMULAIRE DE RÉSERVATION -->
-        <section id="booking" class="bg-white p-8 md:p-12 rounded-3xl border border-stone-200 shadow-sm">
-            <div class="max-w-xl mx-auto text-center mb-10">
-                <h2 class="font-serif text-3xl font-bold text-coxDark mb-3">Réserver votre date</h2>
-                <p class="text-stone-500 text-sm">Remplissez le formulaire ci-dessous pour planifier votre événement.</p>
+            <!-- Menu Desktop -->
+            <div class="hidden md:flex space-x-8 text-sm font-semibold text-stone-700">
+                <a href="#voiture" class="hover:text-amber-700 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">La Voiture</a>
+                <a href="#formules" class="hover:text-amber-700 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">Formules</a>
+                <a href="#galerie" class="hover:text-amber-700 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">Galerie</a>
+                <a href="#avis" class="hover:text-amber-700 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">Avis</a>
             </div>
 
-            <form id="bookingForm" class="space-y-6 max-w-xl mx-auto">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Nom complet</label>
-                        <input type="text" id="formName" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Téléphone</label>
-                        <input type="tel" id="formPhone" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Email</label>
-                        <input type="email" id="formEmail" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Date souhaitée</label>
-                        <input type="date" id="formDate" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Ville / Lieu</label>
-                    <input type="text" id="formCity" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Message (Détails)</label>
-                    <textarea id="formMessage" rows="4" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition"></textarea>
-                </div>
-
-                <button type="submit" id="btnSubmitBooking" class="w-full bg-coxDark text-amber-50 font-semibold py-4 rounded-xl hover:bg-stone-800 transition flex items-center justify-center gap-2">
-                    <span>Envoyer la demande</span>
+            <div class="flex items-center gap-3">
+                <!-- Bouton Instagram -->
+                <a href="https://www.instagram.com/cox_vanille?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" class="p-2 text-stone-700 hover:text-pink-600 hover:scale-110 active:scale-95 transition-all duration-200" title="Suivez-nous sur Instagram">
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </a>
+                <a href="#reservation" class="hidden md:inline-block bg-coxDark text-amber-50 px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-amber-600 active:scale-95 transition-all duration-200 shadow-md">Réserver</a>
+                
+                <!-- Menu Mobile Hamburger -->
+                <button id="mobileMenuBtn" class="md:hidden p-2 text-stone-700 hover:text-amber-700 focus:outline-none">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
                 </button>
-            </form>
-
-            <!-- Message de succès caché -->
-            <div id="formSuccess" class="hidden text-center py-12 space-y-4 max-w-md mx-auto">
-                <div class="w-16 h-16 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">✓</div>
-                <h3 class="font-serif text-2xl font-bold text-coxDark">Demande envoyée avec succès !</h3>
-                <p class="text-stone-500 text-sm">Nous avons bien reçu votre message et vous recontacterons dans les plus brefs délais.</p>
             </div>
-        </section>
+        </div>
 
-        <!-- SECTION AVIS -->
-        <section id="reviews" class="space-y-12">
-            <div class="text-center max-w-xl mx-auto">
-                <h2 class="font-serif text-3xl font-bold text-coxDark mb-3">Avis clients</h2>
-                <p class="text-stone-500 text-sm">Découvrez les retours d'expériences de nos clients.</p>
+        <!-- Dropdown Menu Mobile -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-b border-amber-900/10 shadow-lg absolute w-full">
+            <div class="px-4 py-4 flex flex-col space-y-4 font-semibold text-stone-700 text-center">
+                <a href="#voiture" class="mobile-link hover:text-amber-700">La Voiture</a>
+                <a href="#formules" class="mobile-link hover:text-amber-700">Formules</a>
+                <a href="#galerie" class="mobile-link hover:text-amber-700">Galerie</a>
+                <a href="#avis" class="mobile-link hover:text-amber-700">Avis</a>
+                <a href="#reservation" class="mobile-link inline-block bg-coxDark text-amber-50 mx-8 py-3 rounded-xl hover:bg-amber-600">Réserver la date</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="pt-32 pb-20 md:pt-40 md:pb-28 px-4 bg-coxCream">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <span class="inline-block bg-amber-100 text-amber-900 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider mb-4 border border-amber-200">Voiture de collection • 1967</span>
+                <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6 text-coxDark">Un charme rétro authentique pour votre mariage.</h1>
+                <p class="text-lg text-stone-700 mb-8 leading-relaxed">Faites une entrée d'exception à bord d'une authentique Volkswagen Coccinelle de 1967 d'un jaune vanille éclatant. Entretenue avec soin, elle offre un cachet vintage garanti pour vos photos.</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#reservation" class="bg-amber-500 text-coxDark font-bold px-8 py-4 rounded-full text-center hover:bg-amber-400 active:scale-95 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 hover:-translate-y-0.5 transition-all duration-200">Obtenir un devis gratuit</a>
+                    <a href="#voiture" class="bg-white border border-stone-300 font-semibold text-stone-800 px-8 py-4 rounded-full text-center hover:bg-stone-50 active:scale-95 hover:-translate-y-0.5 transition-all duration-200 shadow-sm">Découvrir le véhicule</a>
+                </div>
+            </div>
+            <div class="flex justify-center">
+                <div class="rounded-2xl overflow-hidden shadow-xl max-w-md w-full relative group">
+                    <img src="hero.png" alt="Volkswagen Coccinelle Jaune 1967" class="w-full h-auto object-cover group-hover:scale-105 transition duration-700" onerror="this.src='https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1000&auto=format&fit=crop'">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CARACTÉRISTIQUES -->
+    <section id="voiture" class="py-20 bg-coxCreamDark border-y border-amber-900/10">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-coxDark">Une icône de 1967 à l'état pur</h2>
+                <p class="text-stone-700">Un véhicule historique passionnément conservé pour sublimer vos moments précieux.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="p-8 rounded-2xl bg-white border border-amber-900/10 shadow-sm hover:shadow-lg hover:-translate-y-2 transition duration-300 group">
+                    <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-amber-200 transition">✨</div>
+                    <h3 class="text-xl font-bold mb-2 text-coxDark">Entretien d'Origine</h3>
+                    <p class="text-stone-600 text-sm leading-relaxed">Entretenue scrupuleusement depuis sa sortie d'usine en 1967 pour une fiabilité et une sérénité absolues.</p>
+                </div>
+                <div class="p-8 rounded-2xl bg-white border border-amber-900/10 shadow-sm hover:shadow-lg hover:-translate-y-2 transition duration-300 group">
+                    <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-amber-200 transition">🕰️</div>
+                    <h3 class="text-xl font-bold mb-2 text-coxDark">Intérieur Authentique</h3>
+                    <p class="text-stone-600 text-sm leading-relaxed">Intérieur d'origine conservé avec soin. Un véritable voyage dans le temps dès que vous ouvrez la porte.</p>
+                </div>
+                <div class="p-8 rounded-2xl bg-white border border-amber-900/10 shadow-sm hover:shadow-lg hover:-translate-y-2 transition duration-300 group">
+                    <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-amber-200 transition">📸</div>
+                    <h3 class="text-xl font-bold mb-2 text-coxDark">Effet Vintage Garanti</h3>
+                    <p class="text-stone-600 text-sm leading-relaxed">Le cachet unique des années 60 et sa teinte jaune solaire apportent une touche poétique incomparable à vos photos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FORMULES & TARIFS -->
+    <section id="formules" class="py-20 px-4 bg-coxCream">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-coxDark">Nos Formules Mariage</h2>
+                <p class="text-stone-700">Des prestations sur-mesure pour votre grand jour.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+                <!-- FORFAIT DEMI-JOURNÉE -->
+                <div class="bg-white p-8 rounded-3xl border border-amber-900/10 shadow-sm flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition duration-300">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-3 py-1 rounded-full">Demi-Journée</span>
+                        <h3 class="text-2xl font-bold mt-4 mb-2 text-coxDark">Forfait Cérémonie & Photos</h3>
+                        <div class="text-4xl font-extrabold my-4 text-coxDark">250 € <span class="text-sm font-normal text-stone-500">/ 4 heures</span></div>
+                        <ul class="space-y-3 text-stone-600 text-sm mb-8">
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Véhicule à disposition pendant 4 heures</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Idéal pour l'arrivée des mariés et le shooting photo</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Présentation impeccable et véhicule lustré</li>
+                        </ul>
+                    </div>
+                    <a href="#reservation" class="w-full block py-3 text-center rounded-xl font-bold border-2 border-coxDark text-coxDark hover:bg-coxDark hover:text-white active:scale-95 transition-all duration-200">Demander un devis</a>
+                </div>
+
+                <!-- FORFAIT JOURNÉE COMPLÈTE -->
+                <div class="bg-coxDark text-amber-50 p-8 rounded-3xl shadow-xl flex flex-col justify-between relative overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition duration-300 border border-amber-900/30">
+                    <div class="absolute top-4 right-4 bg-amber-500 text-coxDark text-xs font-bold px-3 py-1 rounded-full animate-pulse">Recommandé</div>
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-900/40 px-3 py-1 rounded-full">Journée Complète</span>
+                        <h3 class="text-2xl font-bold mt-4 mb-2 text-white">Forfait Mariage Prestige</h3>
+                        <div class="text-4xl font-extrabold my-4 text-amber-400">450 € <span class="text-sm font-normal text-stone-300">/ journée</span></div>
+                        <ul class="space-y-3 text-stone-300 text-sm mb-8">
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Véhicule à disposition toute la journée</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Trajets préparatifs, mairie/église et domaine</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Accès illimité pour vos photos de couple</li>
+                        </ul>
+                    </div>
+                    <a href="#reservation" class="w-full block py-3 text-center rounded-xl font-bold bg-amber-500 text-coxDark hover:bg-amber-400 active:scale-95 transition-all duration-200 shadow-md">Demander un devis</a>
+                </div>
             </div>
 
-            <!-- Liste des avis dynamique -->
-            <div id="reviewsList" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Injecté dynamiquement par JS -->
+            <!-- OPTION PRESTATION FLORALE -->
+            <div class="max-w-4xl mx-auto bg-amber-500/10 border border-amber-500/30 p-6 md:p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 hover:bg-amber-500/20 transition duration-300">
+                <div class="text-center md:text-left">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-200 px-3 py-1 rounded-full inline-block mb-3">Option supplémentaire</span>
+                    <h4 class="text-xl font-bold text-coxDark mb-2">Composition & Décoration Florale</h4>
+                    <p class="text-stone-700 text-sm leading-relaxed">
+                        Sublimez la Coccinelle avec une composition de fleurs fraîches (capot, poignées, pare-chocs) réalisée sur-mesure pour s'harmoniser avec le thème de votre mariage.
+                    </p>
+                </div>
+                <div class="shrink-0 text-center md:text-right">
+                    <span class="block text-sm font-semibold text-stone-600">Tarif sur devis</span>
+                    <a href="#reservation" class="inline-block mt-2 px-6 py-2.5 bg-coxDark text-amber-50 text-sm font-bold rounded-xl hover:bg-amber-600 transition">L'ajouter au devis</a>
+                </div>
             </div>
 
-            <!-- Formulaire d'ajout d'avis -->
-            <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm max-w-xl mx-auto">
-                <h3 class="font-serif text-xl font-bold text-coxDark mb-6 text-center">Laisser un avis</h3>
+        </div>
+    </section>
+
+    <!-- GALERIE -->
+    <section id="galerie" class="py-20 bg-coxCreamDark border-t border-amber-900/10">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-3 text-coxDark">Galerie de cox_vanille</h2>
+                <a href="https://www.instagram.com/cox_vanille?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm font-semibold text-amber-800 hover:text-amber-900 hover:underline transition">
+                    Voir plus de photos sur notre Instagram @cox_vanille →
+                </a>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="overflow-hidden rounded-xl shadow-md bg-white border border-amber-900/10">
+                    <img src="galerie1.png" class="h-60 w-full object-cover hover:scale-110 transition duration-500 cursor-pointer" onerror="this.src='https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=600&auto=format&fit=crop'">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md bg-white border border-amber-900/10">
+                    <img src="galerie2.png" class="h-60 w-full object-cover hover:scale-110 transition duration-500 cursor-pointer" onerror="this.src='https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=600&auto=format&fit=crop'">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md bg-white border border-amber-900/10">
+                    <img src="galerie3.png" class="h-60 w-full object-cover hover:scale-110 transition duration-500 cursor-pointer" onerror="this.src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600&auto=format&fit=crop'">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md bg-white border border-amber-900/10">
+                    <img src="galerie4.png" class="h-60 w-full object-cover hover:scale-110 transition duration-500 cursor-pointer" onerror="this.src='https://images.unsplash.com/photo-1489824904134-891ab64532f1?q=80&w=600&auto=format&fit=crop'">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION AVIS CLIENTS -->
+    <section id="avis" class="py-20 px-4 bg-coxCream">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-coxDark">Avis des mariés</h2>
+                <p class="text-stone-700">Découvrez les témoignages déposés par les mariés ou laissez votre propre expérience.</p>
+            </div>
+
+            <!-- LISTE DES AVIS -->
+            <div id="reviewsList" class="grid md:grid-cols-3 gap-6 mb-16">
+                <div class="col-span-3 text-center py-10">
+                    <div class="animate-spin inline-block w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full"></div>
+                    <p class="mt-2 text-stone-500">Chargement des avis...</p>
+                </div>
+            </div>
+
+            <!-- FORMULAIRE DE DÉPÔT D'AVIS CLIENT -->
+            <div class="max-w-2xl mx-auto bg-white p-8 rounded-3xl border border-amber-900/10 shadow-md">
+                <h3 class="text-xl font-bold mb-4 text-center text-coxDark">Laisser un avis</h3>
                 <form id="reviewForm" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Votre Nom</label>
-                        <input type="text" id="reviewAuthor" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
+                        <label class="block text-sm font-semibold mb-1 text-stone-700">Votre Nom / Prénoms</label>
+                        <input type="text" id="reviewAuthor" required placeholder="Ex: Sophie & Marc" class="w-full px-4 py-2.5 rounded-xl bg-coxCream border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Note (1 à 5)</label>
-                        <select id="reviewRating" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
+                        <label class="block text-sm font-semibold mb-1 text-stone-700">Note (Étoiles)</label>
+                        <select id="reviewRating" class="w-full px-4 py-2.5 rounded-xl bg-coxCream border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
                             <option value="5">★★★★★ (5/5)</option>
                             <option value="4">★★★★☆ (4/5)</option>
                             <option value="3">★★★☆☆ (3/5)</option>
@@ -147,92 +252,145 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Votre commentaire</label>
-                        <textarea id="reviewComment" rows="3" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition"></textarea>
+                        <label class="block text-sm font-semibold mb-1 text-stone-700">Votre commentaire</label>
+                        <textarea id="reviewComment" required rows="3" placeholder="Racontez votre expérience avec cox_vanille..." class="w-full px-4 py-2.5 rounded-xl bg-coxCream border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-400"></textarea>
                     </div>
-                    <button type="submit" id="btnSubmitReview" class="w-full bg-stone-200 text-stone-800 font-semibold py-3 rounded-xl hover:bg-stone-300 transition text-sm">
-                        Publier l'avis
+                    <button type="submit" id="btnSubmitReview" class="w-full bg-coxDark text-amber-50 font-bold py-3 rounded-xl hover:bg-amber-600 active:scale-95 transition duration-200 shadow-md flex justify-center items-center">
+                        <span>Publier mon avis</span>
                     </button>
                 </form>
             </div>
-        </section>
+        </div>
+    </section>
 
-    </main>
-
-    <!-- MODALE AUTHENTIFICATION ADMIN (Cachée par défaut) -->
-    <div id="secretAuthModal" class="hidden fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-3xl max-w-md w-full shadow-2xl space-y-6">
-            <h3 class="font-serif text-2xl font-bold text-coxDark">Connexion Administration</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Email Admin</label>
-                    <input type="email" id="secretEmailInput" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Mot de passe</label>
-                    <input type="password" id="secretPassInput" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800">
-                </div>
+    <!-- FORMULAIRE DE RESERVATION -->
+    <section id="reservation" class="py-20 px-4 bg-coxCreamDark border-t border-amber-900/10 relative overflow-hidden">
+        <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-3xl shadow-xl border border-amber-900/10 relative z-10">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-2 text-coxDark">Vérifier la disponibilité</h2>
+                <p class="text-stone-600 text-sm">Recevez une réponse et un devis sous 24h.</p>
             </div>
-            <div class="flex gap-4">
-                <button id="cancelSecretBtn" class="flex-1 bg-stone-100 text-stone-700 py-3 rounded-xl font-semibold text-sm hover:bg-stone-200 transition">Annuler</button>
-                <button id="submitSecretBtn" class="flex-1 bg-coxDark text-amber-50 py-3 rounded-xl font-semibold text-sm hover:bg-stone-800 transition">Connexion</button>
+            
+            <form id="bookingForm" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-stone-700">Nom & Prénom</label>
+                        <input type="text" id="formName" required placeholder="Jean Dupont" class="w-full px-4 py-3 rounded-xl bg-coxCream border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-stone-700">Téléphone</label>
+                        <input type="tel" id="formPhone" required placeholder="06 12 34 56 78" class="w-full px-4 py-3 rounded-xl bg-coxCream border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition duration-200">
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-stone-700">Email</label>
+                        <input type="email" id="formEmail" required placeholder="jean@example.com" class="w-full px-4 py-3 rounded-xl bg-coxCream border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-stone-700">Date du mariage</label>
+                        <input type="date" id="formDate" required class="w-full px-4 py-3 rounded-xl bg-coxCream border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition duration-200">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2 text-stone-700">Lieu du mariage (Ville / Domaine)</label>
+                    <input type="text" id="formCity" required placeholder="Ex: Lille, Arras, Domaine de..." class="w-full px-4 py-3 rounded-xl bg-coxCream border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition duration-200">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2 text-stone-700">Message ou précisions</label>
+                    <textarea id="formMessage" rows="4" placeholder="Précisez la formule souhaitée (Demi-journée ou Complète), et si vous souhaitez l'option florale..." class="w-full px-4 py-3 rounded-xl bg-coxCream border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition duration-200"></textarea>
+                </div>
+                <button type="submit" id="btnSubmitBooking" class="w-full bg-amber-500 text-coxDark font-bold py-4 rounded-xl hover:bg-amber-400 active:scale-95 transition-all duration-200 shadow-lg shadow-amber-500/20 flex justify-center items-center">
+                    <span>Envoyer ma demande</span>
+                </button>
+            </form>
+            
+            <div id="formSuccess" class="hidden text-center py-6 text-green-800 font-bold bg-green-50 rounded-xl border border-green-200 mt-6 toast-animate">
+                🎉 Merci ! Votre demande a été envoyée avec succès. Nous vous recontactons très vite.
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-coxDark text-amber-100/70 py-10 text-center text-sm border-t-4 border-amber-500">
+        <p class="mb-2">© 2026 cox_vanille • Location Coccinelle 1967. Tous droits réservés.</p>
+        <p class="text-xs text-amber-400/80 font-medium">Créé avec ❤️ par le meilleur des petits frères</p>
+    </footer>
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3"></div>
+
+    <!-- MODAL POPUP CODE SECRET -->
+    <div id="secretAuthModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white p-8 rounded-3xl shadow-xl max-w-sm w-full mx-4 border border-amber-900/10 toast-animate">
+            <h3 class="text-xl font-bold text-coxDark mb-4 flex items-center gap-2">🔒 Accès Administrateur</h3>
+            <p class="text-stone-600 text-sm mb-4">Entrez vos identifiants Supabase :</p>
+            
+            <input type="email" id="secretEmailInput" placeholder="Votre email" class="w-full px-4 py-3 border border-stone-300 rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-amber-800 text-sm">
+            <input type="password" id="secretPassInput" placeholder="Votre mot de passe" class="w-full px-4 py-3 border border-stone-300 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-amber-800 text-sm">
+            
+            <div class="flex justify-end gap-3">
+                <button id="cancelSecretBtn" class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-sm font-medium transition">Annuler</button>
+                <button id="submitSecretBtn" class="px-4 py-2 bg-coxDark hover:bg-stone-800 text-white rounded-xl text-sm font-medium transition flex items-center justify-center min-w-[80px]">Valider</button>
             </div>
         </div>
     </div>
 
-    <!-- TABLEAU DE BORD ADMIN (Caché par défaut) -->
-    <div id="adminDashboard" class="hidden fixed inset-0 z-50 bg-stone-100 overflow-y-auto p-6 md:p-12">
-        <div class="max-w-6xl mx-auto space-y-8">
-            <div class="flex items-center justify-between bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
+    <!-- DASHBOARD ADMIN SECRET -->
+    <div id="adminDashboard" class="fixed inset-0 bg-stone-900/95 backdrop-blur-md z-50 hidden overflow-y-auto p-4 md:p-8">
+        <div class="max-w-6xl mx-auto bg-white rounded-3xl p-6 md:p-10 shadow-2xl my-4 border border-amber-900/10">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-stone-200 pb-4 gap-4">
                 <div>
-                    <h2 class="font-serif text-2xl font-bold text-coxDark">Tableau de bord Admin</h2>
-                    <p class="text-stone-500 text-xs">Gestion centralisée des demandes et des avis</p>
+                    <h2 class="text-2xl font-bold text-coxDark">⚙️ Espace Administration</h2>
+                    <p class="text-sm text-stone-500">Gestion des demandes et modération des avis.</p>
                 </div>
-                <button id="closeAdminBtn" class="bg-red-50 text-red-600 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-100 transition">Déconnexion</button>
+                <button id="closeAdminBtn" type="button" class="bg-red-50 text-red-600 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-red-100 border border-red-200 transition">Se déconnecter</button>
             </div>
 
-            <!-- Liste des réservations -->
-            <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden space-y-4 p-6">
-                <div class="flex items-center justify-between">
-                    <h3 class="font-semibold text-coxDark">Demandes de réservation</h3>
-                    <button id="clearSubmissionsBtn" class="text-xs text-red-500 hover:underline">Tout supprimer</button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse text-sm">
+            <!-- TAB 1: DEMANDES -->
+            <div class="mb-12">
+                <h3 class="text-lg font-bold mb-4 text-coxDark border-l-4 border-amber-500 pl-3">1. Demandes de réservation reçues</h3>
+                <div class="overflow-x-auto bg-white border border-stone-200 rounded-2xl shadow-sm">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
                         <thead>
-                            <tr class="border-b border-stone-100 text-xs uppercase tracking-wider text-stone-400">
-                                <th class="p-4">Reçu le</th>
-                                <th class="p-4">Nom</th>
-                                <th class="p-4">Contact</th>
-                                <th class="p-4">Date</th>
-                                <th class="p-4">Ville</th>
-                                <th class="p-4">Message</th>
-                                <th class="p-4 text-right">Actions</th>
+                            <tr class="bg-stone-50 text-stone-600 border-b border-stone-200">
+                                <th class="p-4 font-semibold">Reçu le</th>
+                                <th class="p-4 font-semibold">Nom</th>
+                                <th class="p-4 font-semibold">Contact</th>
+                                <th class="p-4 font-semibold">Date Mariage</th>
+                                <th class="p-4 font-semibold">Lieu</th>
+                                <th class="p-4 font-semibold w-1/3">Message</th>
+                                <th class="p-4 font-semibold text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="adminSubmissionsList">
-                            <!-- Injecté par JS -->
+                        <tbody id="adminSubmissionsList" class="divide-y divide-stone-100">
+                            <!-- Les données s'affichent ici -->
                         </tbody>
                     </table>
                 </div>
+                <div class="mt-4 text-right">
+                    <button id="clearSubmissionsBtn" type="button" class="px-4 py-2 text-stone-500 hover:text-red-600 hover:bg-red-50 rounded-lg font-semibold text-xs transition">
+                        ⚠️ Vider toutes les demandes
+                    </button>
+                </div>
             </div>
 
-            <!-- Liste des avis dans l'admin -->
-            <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden space-y-4 p-6">
-                <h3 class="font-semibold text-coxDark">Gestion des avis publiés</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse text-sm">
+            <!-- TAB 2: GESTION DES AVIS -->
+            <div class="border-t border-stone-200 pt-8">
+                <h3 class="text-lg font-bold mb-4 text-coxDark border-l-4 border-amber-500 pl-3">2. Modération des avis clients</h3>
+                <div class="overflow-x-auto bg-white border border-stone-200 rounded-2xl shadow-sm">
+                    <table class="w-full text-left text-sm">
                         <thead>
-                            <tr class="border-b border-stone-100 text-xs uppercase tracking-wider text-stone-400">
-                                <th class="p-4">Date</th>
-                                <th class="p-4">Auteur</th>
-                                <th class="p-4">Note</th>
-                                <th class="p-4">Commentaire</th>
-                                <th class="p-4 text-right">Actions</th>
+                            <tr class="bg-stone-50 text-stone-600 border-b border-stone-200">
+                                <th class="p-4 font-semibold">Date</th>
+                                <th class="p-4 font-semibold">Auteur</th>
+                                <th class="p-4 font-semibold">Note</th>
+                                <th class="p-4 font-semibold w-1/2">Commentaire</th>
+                                <th class="p-4 font-semibold text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="adminReviewsList">
-                            <!-- Injecté par JS -->
+                        <tbody id="adminReviewsList" class="divide-y divide-stone-100">
+                            <!-- Les avis apparaissent ici -->
                         </tbody>
                     </table>
                 </div>
@@ -240,19 +398,15 @@
         </div>
     </div>
 
-    <!-- CONTENEUR DES TOASTS -->
-    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3"></div>
-
-    <!-- SCRIPT JAVASCRIPT COMPLET -->
     <script>
     // -----------------------------
-    // INITIALISATION SUPABASE
+    // CONFIGURATION & INITIALISATION
     // -----------------------------
     const SUPABASE_URL = 'https://efchmfsighgvzygrassc.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_NGI0PXrRGeRc5j11p3foeg_rKJNrxv1';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Date minimale (désactive les dates passées)
+    // Initialisation de la date minimale pour le formulaire (pas de date passée)
     const dateInput = document.getElementById('formDate');
     if(dateInput) {
         const today = new Date().toISOString().split("T")[0];
@@ -273,20 +427,13 @@
         });
     }
 
-    // Toast Notification SANS Emoji
+    // Système de Toast Notifications
     function showToast(message, type = 'success') {
         const toastContainer = document.getElementById('toastContainer');
-        if (!toastContainer) return;
         const toast = document.createElement('div');
-        const isSuccess = type === 'success';
-        
-        const bgColor = isSuccess ? 'bg-coxDark text-amber-50' : 'bg-red-900 text-white';
-        const iconSvg = isSuccess 
-            ? `<svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`
-            : `<svg class="w-4 h-4 text-red-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
-
-        toast.className = `${bgColor} px-5 py-3 rounded-xl shadow-lg text-xs font-semibold tracking-wide border border-stone-800 toast-animate flex items-center gap-3`;
-        toast.innerHTML = `${iconSvg} <span>${message}</span>`;
+        const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+        toast.className = `${bgColor} text-white px-6 py-3 rounded-xl shadow-lg font-semibold text-sm toast-animate flex items-center gap-2`;
+        toast.innerHTML = type === 'success' ? `✅ ${message}` : `❌ ${message}`;
         toastContainer.appendChild(toast);
         
         setTimeout(() => {
@@ -297,23 +444,9 @@
         }, 4000);
     }
 
-    // Générateur d'étoiles vectorielles SVG
-    function generateStarRating(rating) {
-        let starsHtml = '<div class="flex items-center gap-1">';
-        for (let i = 1; i <= 5; i++) {
-            if (i <= rating) {
-                starsHtml += `<svg class="w-4 h-4 text-amber-700 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
-            } else {
-                starsHtml += `<svg class="w-4 h-4 text-stone-200 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
-            }
-        }
-        starsHtml += '</div>';
-        return starsHtml;
-    }
-
 
     // -----------------------------
-    // GESTION DES AVIS
+    // GESTION DES AVIS (AFFICHAGE ET PUBLICATION)
     // -----------------------------
     const reviewForm = document.getElementById('reviewForm');
     const reviewsList = document.getElementById('reviewsList');
@@ -325,23 +458,24 @@
         
         reviewsList.innerHTML = '';
         if (error) {
-            reviewsList.innerHTML = '<div class="col-span-3 text-center text-red-600 text-xs py-6">Erreur de chargement des avis.</div>';
+            reviewsList.innerHTML = '<div class="col-span-3 text-center text-red-500 py-6">Erreur de chargement des avis.</div>';
             return;
         }
 
         if (!reviews || reviews.length === 0) {
-            reviewsList.innerHTML = '<div class="col-span-3 text-center text-stone-500 text-xs py-8 border border-dashed border-stone-200 rounded-2xl bg-white/50">Aucun avis publié pour le moment.</div>';
+            reviewsList.innerHTML = '<div class="col-span-3 text-center text-stone-500 py-6 border border-dashed border-stone-300 rounded-2xl bg-white/50">Aucun avis pour le moment. Soyez le premier !</div>';
             return;
         }
 
         reviews.forEach(r => {
+            let stars = '★'.repeat(r.rating) + '<span class="text-stone-300">' + '★'.repeat(5 - r.rating) + '</span>';
             reviewsList.innerHTML += `
-                <div class="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                <div class="bg-white p-6 rounded-2xl border border-amber-900/10 shadow-sm flex flex-col justify-between hover:shadow-md transition">
                     <div>
-                        <div class="mb-3">${generateStarRating(r.rating)}</div>
-                        <p class="text-stone-600 text-xs md:text-sm font-light italic mb-6 leading-relaxed">"${r.comment}"</p>
+                        <div class="text-amber-500 mb-3 text-lg">${stars}</div>
+                        <p class="text-stone-600 text-sm italic mb-4">"${r.comment}"</p>
                     </div>
-                    <div class="font-semibold text-coxDark text-xs uppercase tracking-wider">— ${r.author}</div>
+                    <div class="font-bold text-coxDark text-sm">— ${r.author}</div>
                 </div>`;
         });
     }
@@ -349,7 +483,7 @@
     if (reviewForm) {
         reviewForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            btnSubmitReview.innerHTML = '<div class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div> Envoi...';
+            btnSubmitReview.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2"></div> Envoi...';
             btnSubmitReview.disabled = true;
 
             const author = document.getElementById('reviewAuthor').value.trim();
@@ -358,15 +492,15 @@
 
             const { error } = await supabaseClient.from('reviews').insert([{ author, rating, comment }]);
             
-            btnSubmitReview.innerHTML = '<span>Publier l\'avis</span>';
+            btnSubmitReview.innerHTML = 'Publier mon avis';
             btnSubmitReview.disabled = false;
 
             if (!error) {
                 reviewForm.reset();
                 renderReviews();
-                showToast('Votre avis a été publié avec succès.');
+                showToast('Votre avis a été publié avec succès !');
             } else {
-                showToast("Erreur lors de la publication de l'avis.", 'error');
+                showToast("Erreur lors de la publication.", 'error');
             }
         });
     }
@@ -383,7 +517,8 @@
         bookingForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            btnSubmitBooking.innerHTML = '<div class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div> Traitement...';
+            // État de chargement
+            btnSubmitBooking.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-coxDark border-t-transparent rounded-full mr-2"></div> Envoi en cours...';
             btnSubmitBooking.disabled = true;
 
             const bookingData = {
@@ -395,24 +530,26 @@
                 message: document.getElementById('formMessage').value.trim()
             };
 
+            // Insertion dans Supabase (table 'bookings' présumée)
             const { error } = await supabaseClient.from('bookings').insert([bookingData]);
 
-            btnSubmitBooking.innerHTML = '<span>Envoyer la demande</span>';
+            btnSubmitBooking.innerHTML = 'Envoyer ma demande';
             btnSubmitBooking.disabled = false;
 
             if (!error) {
                 bookingForm.style.display = 'none';
-                if(formSuccess) formSuccess.classList.remove('hidden');
-                showToast('Demande envoyée avec succès.');
+                formSuccess.classList.remove('hidden');
+                showToast('Demande envoyée !');
             } else {
                 showToast('Une erreur est survenue, veuillez réessayer.', 'error');
+                console.error(error);
             }
         });
     }
 
 
     // -----------------------------
-    // ESPACE ADMINISTRATION
+    // LOGIQUE ADMIN SECRÈTE
     // -----------------------------
     let logoClicks = 0, clickTimer;
     const logoTrigger = document.getElementById('secretLogoTrigger');
@@ -433,7 +570,7 @@
             clearTimeout(clickTimer);
             if (logoClicks === 5) {
                 logoClicks = 0;
-                if(secretModal) secretModal.classList.remove('hidden');
+                secretModal.classList.remove('hidden');
                 if (emailInput) emailInput.focus();
             } else {
                 clickTimer = setTimeout(() => { logoClicks = 0; }, 2000);
@@ -441,62 +578,66 @@
         });
     }
 
+    // Fermeture modal
     if (cancelSecretBtn) {
         cancelSecretBtn.addEventListener('click', () => {
-            if(secretModal) secretModal.classList.add('hidden');
+            secretModal.classList.add('hidden');
             if (emailInput) emailInput.value = '';
-            if (passInput) passInput.value = '';
+            passInput.value = '';
         });
     }
 
+    // Tentative de connexion
     if (submitSecretBtn) submitSecretBtn.addEventListener('click', loginAdmin);
     if (passInput) passInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loginAdmin(); });
 
     async function loginAdmin() {
-        if (!submitSecretBtn || !passInput) return;
         submitSecretBtn.innerHTML = '<div class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>';
         
         const email = emailInput ? emailInput.value.trim() : '';
         const password = passInput.value;
 
-        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-        submitSecretBtn.innerHTML = 'Connexion';
+        submitSecretBtn.innerHTML = 'Valider';
 
         if (error) {
-            showToast('Identifiants incorrects.', 'error');
+            showToast('E-mail ou mot de passe incorrect.', 'error');
             passInput.value = '';
         } else {
-            if(secretModal) secretModal.classList.add('hidden');
+            secretModal.classList.add('hidden');
             if (emailInput) emailInput.value = '';
             passInput.value = '';
             openAdminDashboard();
         }
     }
 
+    // Déconnexion Admin
     if (closeAdminBtn) {
         closeAdminBtn.addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
-            if(adminDashboard) adminDashboard.classList.add('hidden');
-            showToast('Déconnexion effectuée.');
+            adminDashboard.classList.add('hidden');
+            showToast('Déconnexion réussie');
         });
     }
 
+    // Ouverture et rendu du Dashboard Admin
     async function openAdminDashboard() {
-        if(adminDashboard) adminDashboard.classList.remove('hidden');
+        adminDashboard.classList.remove('hidden');
         renderAdminBookings();
         renderAdminReviewsTable();
     }
 
+    // Rendu des demandes de réservation
     async function renderAdminBookings() {
         const list = document.getElementById('adminSubmissionsList');
         if (!list) return;
-        list.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-stone-400">Chargement...</td></tr>';
+        list.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-stone-500">Chargement des demandes...</td></tr>';
 
         const { data: bookings, error } = await supabaseClient.from('bookings').select('*').order('created_at', { ascending: false });
 
         if (error || !bookings || bookings.length === 0) {
-            list.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-stone-400 italic">Aucune demande reçue.</td></tr>';
+            list.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-stone-500 italic">Aucune demande de réservation pour le moment.</td></tr>';
             return;
         }
 
@@ -505,41 +646,45 @@
             const dateCreation = new Date(b.created_at).toLocaleDateString('fr-FR');
             const dateMariage = new Date(b.date).toLocaleDateString('fr-FR');
             list.innerHTML += `
-                <tr class="hover:bg-stone-50 transition">
-                    <td class="p-4 text-stone-400">${dateCreation}</td>
-                    <td class="p-4 font-semibold text-coxDark">${b.name}</td>
-                    <td class="p-4 text-stone-600">${b.phone}<br><a href="mailto:${b.email}" class="text-amber-800 hover:underline">${b.email}</a></td>
-                    <td class="p-4 font-semibold text-amber-800">${dateMariage}</td>
-                    <td class="p-4 text-stone-600">${b.city}</td>
-                    <td class="p-4 text-stone-500 whitespace-normal break-words max-w-xs">${b.message || '-'}</td>
+                <tr class="hover:bg-stone-50 transition group">
+                    <td class="p-4 text-xs text-stone-500">${dateCreation}</td>
+                    <td class="p-4 font-bold text-coxDark">${b.name}</td>
+                    <td class="p-4 text-stone-700 text-xs">${b.phone}<br><a href="mailto:${b.email}" class="text-amber-600 hover:underline">${b.email}</a></td>
+                    <td class="p-4 font-semibold text-amber-700">${dateMariage}</td>
+                    <td class="p-4 text-stone-700">${b.city}</td>
+                    <td class="p-4 text-xs text-stone-600 whitespace-normal break-words min-w-[200px]">${b.message || '-'}</td>
                     <td class="p-4 text-right">
-                        <button onclick="deleteBooking(${b.id})" class="text-stone-400 hover:text-red-600 p-1.5 rounded-lg transition" title="Supprimer">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <button onclick="deleteBooking(${b.id})" class="text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Supprimer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </td>
                 </tr>`;
         });
     }
 
+    // Suppression d'une demande
     window.deleteBooking = async function(id) {
-        if (confirm("Confirmer la suppression de cette demande ?")) {
+        if (confirm("Êtes-vous sûr de vouloir supprimer cette demande ?")) {
             await supabaseClient.from('bookings').delete().eq('id', id);
-            showToast('Demande supprimée.');
+            showToast('Demande supprimée avec succès');
             renderAdminBookings();
         }
     };
 
+    // Bouton pour tout vider (demandes)
     const clearSubmissionsBtn = document.getElementById('clearSubmissionsBtn');
     if (clearSubmissionsBtn) {
         clearSubmissionsBtn.addEventListener('click', async () => {
-            if (confirm("Voulez-vous supprimer l'ensemble des demandes enregistrées ?")) {
+            if (confirm("ATTENTION : Voulez-vous vraiment supprimer TOUTES les demandes de réservation ? Cette action est irréversible.")) {
+                // Supabase requiert une condition pour delete multiple. 'id' is not null fonctionne.
                 await supabaseClient.from('bookings').delete().not('id', 'is', null);
-                showToast('Toutes les demandes ont été effacées.');
+                showToast('Toutes les demandes ont été supprimées');
                 renderAdminBookings();
             }
         });
     }
 
+    // Rendu de modération des avis
     async function renderAdminReviewsTable() {
         const list = document.getElementById('adminReviewsList');
         if (!list) return;
@@ -547,38 +692,42 @@
         const { data: reviews, error } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
         
         if (error || !reviews || reviews.length === 0) {
-            list.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-stone-400 italic">Aucun avis enregistré.</td></tr>';
+            list.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-stone-500 italic">Aucun avis trouvé.</td></tr>';
             return;
         }
 
         list.innerHTML = '';
         reviews.forEach(r => {
             const dateCreation = new Date(r.created_at).toLocaleDateString('fr-FR');
+            let stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
             list.innerHTML += `
                 <tr class="hover:bg-stone-50 transition">
-                    <td class="p-4 text-stone-400">${dateCreation}</td>
-                    <td class="p-4 font-semibold text-coxDark">${r.author}</td>
-                    <td class="p-4">${generateStarRating(r.rating)}</td>
-                    <td class="p-4 text-stone-600 whitespace-normal break-words">${r.comment}</td>
+                    <td class="p-4 text-xs text-stone-500">${dateCreation}</td>
+                    <td class="p-4 font-bold text-coxDark">${r.author}</td>
+                    <td class="p-4 text-amber-500">${stars}</td>
+                    <td class="p-4 text-xs text-stone-600 whitespace-normal break-words">${r.comment}</td>
                     <td class="p-4 text-right">
-                        <button onclick="deleteReview(${r.id})" class="text-stone-400 hover:text-red-600 p-1.5 rounded-lg transition" title="Supprimer cet avis">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <button onclick="deleteReview(${r.id})" class="text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Supprimer cet avis">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </td>
                 </tr>`;
         });
     }
 
+    // Suppression d'un avis (complétée !)
     window.deleteReview = async function(id) {
-        if (confirm("Confirmer la suppression de cet avis ?")) {
+        if (confirm("Supprimer cet avis définitivement ?")) {
             await supabaseClient.from('reviews').delete().eq('id', id);
-            showToast('Avis supprimé.');
-            renderReviews();
-            renderAdminReviewsTable();
+            showToast('Avis supprimé avec succès');
+            renderReviews(); // Met à jour le site public
+            renderAdminReviewsTable(); // Met à jour le tableau admin
         }
     };
 
+    // Chargement initial des avis sur la page publique
     document.addEventListener("DOMContentLoaded", renderReviews);
+
     </script>
 </body>
 </html>

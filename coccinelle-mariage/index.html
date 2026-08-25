@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservation - Prestation</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coxDark: '#1c1917'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(1rem); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .toast-animate {
+            animation: slideUp 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased selection:bg-amber-800 selection:text-white">
+
+    <!-- HEADER & NAVIGATION -->
+    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-stone-200">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <!-- Logo secret (Cliquer 5 fois dessus ouvre l'accès admin) -->
+            <a href="#" id="secretLogoTrigger" class="font-serif text-2xl font-bold tracking-tight text-coxDark">
+                MonLogo<span class="text-amber-700">.</span>
+            </a>
+
+            <!-- Navigation Desktop -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-stone-600">
+                <a href="#booking" class="hover:text-amber-800 transition">Réserver</a>
+                <a href="#reviews" class="hover:text-amber-800 transition">Avis</a>
+            </nav>
+
+            <!-- Bouton Menu Mobile -->
+            <button id="mobileMenuBtn" class="md:hidden p-2 text-stone-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Menu Mobile Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-b border-stone-200 px-6 py-4 space-y-3">
+            <a href="#booking" class="mobile-link block text-stone-600 hover:text-amber-800 font-medium">Réserver</a>
+            <a href="#reviews" class="mobile-link block text-stone-600 hover:text-amber-800 font-medium">Avis</a>
+        </div>
+    </header>
+
+    <!-- SECTION PRINCIPALE -->
+    <main class="max-w-4xl mx-auto px-6 py-16 space-y-24">
+
+        <!-- FORMULAIRE DE RÉSERVATION -->
+        <section id="booking" class="bg-white p-8 md:p-12 rounded-3xl border border-stone-200 shadow-sm">
+            <div class="max-w-xl mx-auto text-center mb-10">
+                <h2 class="font-serif text-3xl font-bold text-coxDark mb-3">Réserver votre date</h2>
+                <p class="text-stone-500 text-sm">Remplissez le formulaire ci-dessous pour planifier votre événement.</p>
+            </div>
+
+            <form id="bookingForm" class="space-y-6 max-w-xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Nom complet</label>
+                        <input type="text" id="formName" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Téléphone</label>
+                        <input type="tel" id="formPhone" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Email</label>
+                        <input type="email" id="formEmail" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Date souhaitée</label>
+                        <input type="date" id="formDate" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Ville / Lieu</label>
+                    <input type="text" id="formCity" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Message (Détails)</label>
+                    <textarea id="formMessage" rows="4" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition"></textarea>
+                </div>
+
+                <button type="submit" id="btnSubmitBooking" class="w-full bg-coxDark text-amber-50 font-semibold py-4 rounded-xl hover:bg-stone-800 transition flex items-center justify-center gap-2">
+                    <span>Envoyer la demande</span>
+                </button>
+            </form>
+
+            <!-- Message de succès caché -->
+            <div id="formSuccess" class="hidden text-center py-12 space-y-4 max-w-md mx-auto">
+                <div class="w-16 h-16 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">✓</div>
+                <h3 class="font-serif text-2xl font-bold text-coxDark">Demande envoyée avec succès !</h3>
+                <p class="text-stone-500 text-sm">Nous avons bien reçu votre message et vous recontacterons dans les plus brefs délais.</p>
+            </div>
+        </section>
+
+        <!-- SECTION AVIS -->
+        <section id="reviews" class="space-y-12">
+            <div class="text-center max-w-xl mx-auto">
+                <h2 class="font-serif text-3xl font-bold text-coxDark mb-3">Avis clients</h2>
+                <p class="text-stone-500 text-sm">Découvrez les retours d'expériences de nos clients.</p>
+            </div>
+
+            <!-- Liste des avis dynamique -->
+            <div id="reviewsList" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Injecté dynamiquement par JS -->
+            </div>
+
+            <!-- Formulaire d'ajout d'avis -->
+            <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm max-w-xl mx-auto">
+                <h3 class="font-serif text-xl font-bold text-coxDark mb-6 text-center">Laisser un avis</h3>
+                <form id="reviewForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Votre Nom</label>
+                        <input type="text" id="reviewAuthor" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Note (1 à 5)</label>
+                        <select id="reviewRating" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition">
+                            <option value="5">★★★★★ (5/5)</option>
+                            <option value="4">★★★★☆ (4/5)</option>
+                            <option value="3">★★★☆☆ (3/5)</option>
+                            <option value="2">★★☆☆☆ (2/5)</option>
+                            <option value="1">★☆☆☆☆ (1/5)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Votre commentaire</label>
+                        <textarea id="reviewComment" rows="3" required class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800 transition"></textarea>
+                    </div>
+                    <button type="submit" id="btnSubmitReview" class="w-full bg-stone-200 text-stone-800 font-semibold py-3 rounded-xl hover:bg-stone-300 transition text-sm">
+                        Publier l'avis
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODALE AUTHENTIFICATION ADMIN (Cachée par défaut) -->
+    <div id="secretAuthModal" class="hidden fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-3xl max-w-md w-full shadow-2xl space-y-6">
+            <h3 class="font-serif text-2xl font-bold text-coxDark">Connexion Administration</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Email Admin</label>
+                    <input type="email" id="secretEmailInput" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">Mot de passe</label>
+                    <input type="password" id="secretPassInput" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-800">
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button id="cancelSecretBtn" class="flex-1 bg-stone-100 text-stone-700 py-3 rounded-xl font-semibold text-sm hover:bg-stone-200 transition">Annuler</button>
+                <button id="submitSecretBtn" class="flex-1 bg-coxDark text-amber-50 py-3 rounded-xl font-semibold text-sm hover:bg-stone-800 transition">Connexion</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLEAU DE BORD ADMIN (Caché par défaut) -->
+    <div id="adminDashboard" class="hidden fixed inset-0 z-50 bg-stone-100 overflow-y-auto p-6 md:p-12">
+        <div class="max-w-6xl mx-auto space-y-8">
+            <div class="flex items-center justify-between bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
+                <div>
+                    <h2 class="font-serif text-2xl font-bold text-coxDark">Tableau de bord Admin</h2>
+                    <p class="text-stone-500 text-xs">Gestion centralisée des demandes et des avis</p>
+                </div>
+                <button id="closeAdminBtn" class="bg-red-50 text-red-600 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-100 transition">Déconnexion</button>
+            </div>
+
+            <!-- Liste des réservations -->
+            <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden space-y-4 p-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-coxDark">Demandes de réservation</h3>
+                    <button id="clearSubmissionsBtn" class="text-xs text-red-500 hover:underline">Tout supprimer</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b border-stone-100 text-xs uppercase tracking-wider text-stone-400">
+                                <th class="p-4">Reçu le</th>
+                                <th class="p-4">Nom</th>
+                                <th class="p-4">Contact</th>
+                                <th class="p-4">Date</th>
+                                <th class="p-4">Ville</th>
+                                <th class="p-4">Message</th>
+                                <th class="p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminSubmissionsList">
+                            <!-- Injecté par JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Liste des avis dans l'admin -->
+            <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden space-y-4 p-6">
+                <h3 class="font-semibold text-coxDark">Gestion des avis publiés</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b border-stone-100 text-xs uppercase tracking-wider text-stone-400">
+                                <th class="p-4">Date</th>
+                                <th class="p-4">Auteur</th>
+                                <th class="p-4">Note</th>
+                                <th class="p-4">Commentaire</th>
+                                <th class="p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminReviewsList">
+                            <!-- Injecté par JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEUR DES TOASTS -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3"></div>
+
+    <!-- SCRIPT JAVASCRIPT COMPLET -->
+    <script>
+    // -----------------------------
+    // INITIALISATION SUPABASE
+    // -----------------------------
+    const SUPABASE_URL = 'https://efchmfsighgvzygrassc.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_NGI0PXrRGeRc5j11p3foeg_rKJNrxv1';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Date minimale (désactive les dates passées)
+    const dateInput = document.getElementById('formDate');
+    if(dateInput) {
+        const today = new Date().toISOString().split("T")[0];
+        dateInput.min = today;
+    }
+
+    // Menu Mobile
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileLinks = document.querySelectorAll('.mobile-link');
+
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+        });
+    }
+
+    // Toast Notification SANS Emoji
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) return;
+        const toast = document.createElement('div');
+        const isSuccess = type === 'success';
+        
+        const bgColor = isSuccess ? 'bg-coxDark text-amber-50' : 'bg-red-900 text-white';
+        const iconSvg = isSuccess 
+            ? `<svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`
+            : `<svg class="w-4 h-4 text-red-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+
+        toast.className = `${bgColor} px-5 py-3 rounded-xl shadow-lg text-xs font-semibold tracking-wide border border-stone-800 toast-animate flex items-center gap-3`;
+        toast.innerHTML = `${iconSvg} <span>${message}</span>`;
+        toastContainer.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(100%)';
+            toast.style.transition = 'all 0.3s ease-out';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    // Générateur d'étoiles vectorielles SVG
+    function generateStarRating(rating) {
+        let starsHtml = '<div class="flex items-center gap-1">';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                starsHtml += `<svg class="w-4 h-4 text-amber-700 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
+            } else {
+                starsHtml += `<svg class="w-4 h-4 text-stone-200 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
+            }
+        }
+        starsHtml += '</div>';
+        return starsHtml;
+    }
+
+
+    // -----------------------------
+    // GESTION DES AVIS
+    // -----------------------------
+    const reviewForm = document.getElementById('reviewForm');
+    const reviewsList = document.getElementById('reviewsList');
+    const btnSubmitReview = document.getElementById('btnSubmitReview');
+
+    async function renderReviews() {
+        if (!reviewsList) return;
+        const { data: reviews, error } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
+        
+        reviewsList.innerHTML = '';
+        if (error) {
+            reviewsList.innerHTML = '<div class="col-span-3 text-center text-red-600 text-xs py-6">Erreur de chargement des avis.</div>';
+            return;
+        }
+
+        if (!reviews || reviews.length === 0) {
+            reviewsList.innerHTML = '<div class="col-span-3 text-center text-stone-500 text-xs py-8 border border-dashed border-stone-200 rounded-2xl bg-white/50">Aucun avis publié pour le moment.</div>';
+            return;
+        }
+
+        reviews.forEach(r => {
+            reviewsList.innerHTML += `
+                <div class="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                    <div>
+                        <div class="mb-3">${generateStarRating(r.rating)}</div>
+                        <p class="text-stone-600 text-xs md:text-sm font-light italic mb-6 leading-relaxed">"${r.comment}"</p>
+                    </div>
+                    <div class="font-semibold text-coxDark text-xs uppercase tracking-wider">— ${r.author}</div>
+                </div>`;
+        });
+    }
+
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            btnSubmitReview.innerHTML = '<div class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div> Envoi...';
+            btnSubmitReview.disabled = true;
+
+            const author = document.getElementById('reviewAuthor').value.trim();
+            const rating = parseInt(document.getElementById('reviewRating').value);
+            const comment = document.getElementById('reviewComment').value.trim();
+
+            const { error } = await supabaseClient.from('reviews').insert([{ author, rating, comment }]);
+            
+            btnSubmitReview.innerHTML = '<span>Publier l\'avis</span>';
+            btnSubmitReview.disabled = false;
+
+            if (!error) {
+                reviewForm.reset();
+                renderReviews();
+                showToast('Votre avis a été publié avec succès.');
+            } else {
+                showToast("Erreur lors de la publication de l'avis.", 'error');
+            }
+        });
+    }
+
+
+    // -----------------------------
+    // GESTION DU FORMULAIRE DE RÉSERVATION
+    // -----------------------------
+    const bookingForm = document.getElementById('bookingForm');
+    const formSuccess = document.getElementById('formSuccess');
+    const btnSubmitBooking = document.getElementById('btnSubmitBooking');
+
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            btnSubmitBooking.innerHTML = '<div class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div> Traitement...';
+            btnSubmitBooking.disabled = true;
+
+            const bookingData = {
+                name: document.getElementById('formName').value.trim(),
+                phone: document.getElementById('formPhone').value.trim(),
+                email: document.getElementById('formEmail').value.trim(),
+                date: document.getElementById('formDate').value,
+                city: document.getElementById('formCity').value.trim(),
+                message: document.getElementById('formMessage').value.trim()
+            };
+
+            const { error } = await supabaseClient.from('bookings').insert([bookingData]);
+
+            btnSubmitBooking.innerHTML = '<span>Envoyer la demande</span>';
+            btnSubmitBooking.disabled = false;
+
+            if (!error) {
+                bookingForm.style.display = 'none';
+                if(formSuccess) formSuccess.classList.remove('hidden');
+                showToast('Demande envoyée avec succès.');
+            } else {
+                showToast('Une erreur est survenue, veuillez réessayer.', 'error');
+            }
+        });
+    }
+
+
+    // -----------------------------
+    // ESPACE ADMINISTRATION
+    // -----------------------------
+    let logoClicks = 0, clickTimer;
+    const logoTrigger = document.getElementById('secretLogoTrigger');
+    const secretModal = document.getElementById('secretAuthModal');
+    const emailInput = document.getElementById('secretEmailInput');
+    const passInput = document.getElementById('secretPassInput');
+    const submitSecretBtn = document.getElementById('submitSecretBtn');
+    const cancelSecretBtn = document.getElementById('cancelSecretBtn');
+    const adminDashboard = document.getElementById('adminDashboard');
+    const closeAdminBtn = document.getElementById('closeAdminBtn');
+
+    // Détection des 5 clics
+    if (logoTrigger) {
+        logoTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            logoClicks++;
+            clearTimeout(clickTimer);
+            if (logoClicks === 5) {
+                logoClicks = 0;
+                if(secretModal) secretModal.classList.remove('hidden');
+                if (emailInput) emailInput.focus();
+            } else {
+                clickTimer = setTimeout(() => { logoClicks = 0; }, 2000);
+            }
+        });
+    }
+
+    if (cancelSecretBtn) {
+        cancelSecretBtn.addEventListener('click', () => {
+            if(secretModal) secretModal.classList.add('hidden');
+            if (emailInput) emailInput.value = '';
+            if (passInput) passInput.value = '';
+        });
+    }
+
+    if (submitSecretBtn) submitSecretBtn.addEventListener('click', loginAdmin);
+    if (passInput) passInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loginAdmin(); });
+
+    async function loginAdmin() {
+        if (!submitSecretBtn || !passInput) return;
+        submitSecretBtn.innerHTML = '<div class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>';
+        
+        const email = emailInput ? emailInput.value.trim() : '';
+        const password = passInput.value;
+
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+        submitSecretBtn.innerHTML = 'Connexion';
+
+        if (error) {
+            showToast('Identifiants incorrects.', 'error');
+            passInput.value = '';
+        } else {
+            if(secretModal) secretModal.classList.add('hidden');
+            if (emailInput) emailInput.value = '';
+            passInput.value = '';
+            openAdminDashboard();
+        }
+    }
+
+    if (closeAdminBtn) {
+        closeAdminBtn.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            if(adminDashboard) adminDashboard.classList.add('hidden');
+            showToast('Déconnexion effectuée.');
+        });
+    }
+
+    async function openAdminDashboard() {
+        if(adminDashboard) adminDashboard.classList.remove('hidden');
+        renderAdminBookings();
+        renderAdminReviewsTable();
+    }
+
+    async function renderAdminBookings() {
+        const list = document.getElementById('adminSubmissionsList');
+        if (!list) return;
+        list.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-stone-400">Chargement...</td></tr>';
+
+        const { data: bookings, error } = await supabaseClient.from('bookings').select('*').order('created_at', { ascending: false });
+
+        if (error || !bookings || bookings.length === 0) {
+            list.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-stone-400 italic">Aucune demande reçue.</td></tr>';
+            return;
+        }
+
+        list.innerHTML = '';
+        bookings.forEach(b => {
+            const dateCreation = new Date(b.created_at).toLocaleDateString('fr-FR');
+            const dateMariage = new Date(b.date).toLocaleDateString('fr-FR');
+            list.innerHTML += `
+                <tr class="hover:bg-stone-50 transition">
+                    <td class="p-4 text-stone-400">${dateCreation}</td>
+                    <td class="p-4 font-semibold text-coxDark">${b.name}</td>
+                    <td class="p-4 text-stone-600">${b.phone}<br><a href="mailto:${b.email}" class="text-amber-800 hover:underline">${b.email}</a></td>
+                    <td class="p-4 font-semibold text-amber-800">${dateMariage}</td>
+                    <td class="p-4 text-stone-600">${b.city}</td>
+                    <td class="p-4 text-stone-500 whitespace-normal break-words max-w-xs">${b.message || '-'}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="deleteBooking(${b.id})" class="text-stone-400 hover:text-red-600 p-1.5 rounded-lg transition" title="Supprimer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    window.deleteBooking = async function(id) {
+        if (confirm("Confirmer la suppression de cette demande ?")) {
+            await supabaseClient.from('bookings').delete().eq('id', id);
+            showToast('Demande supprimée.');
+            renderAdminBookings();
+        }
+    };
+
+    const clearSubmissionsBtn = document.getElementById('clearSubmissionsBtn');
+    if (clearSubmissionsBtn) {
+        clearSubmissionsBtn.addEventListener('click', async () => {
+            if (confirm("Voulez-vous supprimer l'ensemble des demandes enregistrées ?")) {
+                await supabaseClient.from('bookings').delete().not('id', 'is', null);
+                showToast('Toutes les demandes ont été effacées.');
+                renderAdminBookings();
+            }
+        });
+    }
+
+    async function renderAdminReviewsTable() {
+        const list = document.getElementById('adminReviewsList');
+        if (!list) return;
+        
+        const { data: reviews, error } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
+        
+        if (error || !reviews || reviews.length === 0) {
+            list.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-stone-400 italic">Aucun avis enregistré.</td></tr>';
+            return;
+        }
+
+        list.innerHTML = '';
+        reviews.forEach(r => {
+            const dateCreation = new Date(r.created_at).toLocaleDateString('fr-FR');
+            list.innerHTML += `
+                <tr class="hover:bg-stone-50 transition">
+                    <td class="p-4 text-stone-400">${dateCreation}</td>
+                    <td class="p-4 font-semibold text-coxDark">${r.author}</td>
+                    <td class="p-4">${generateStarRating(r.rating)}</td>
+                    <td class="p-4 text-stone-600 whitespace-normal break-words">${r.comment}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="deleteReview(${r.id})" class="text-stone-400 hover:text-red-600 p-1.5 rounded-lg transition" title="Supprimer cet avis">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    window.deleteReview = async function(id) {
+        if (confirm("Confirmer la suppression de cet avis ?")) {
+            await supabaseClient.from('reviews').delete().eq('id', id);
+            showToast('Avis supprimé.');
+            renderReviews();
+            renderAdminReviewsTable();
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", renderReviews);
+    </script>
+</body>
+</html>

@@ -269,12 +269,12 @@
         </div>
     </section>
 
-    <!-- FORMULAIRE DE RESERVATION -->
+   <!-- FORMULAIRE DE RESERVATION -->
     <section id="reservation" class="py-24 px-6 bg-coxCreamDark/60 border-t border-stone-200/80">
         <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-3xl shadow-lg border border-stone-200/80">
             <div class="text-center mb-10">
                 <h2 class="text-3xl font-bold mb-2 text-coxDark">Réserver la Date</h2>
-                <p class="text-stone-600 text-sm font-light">Vérifiez la disponibilité du véhicule et recevez un devis clair sous 24h.</p>
+                <p class="text-stone-600 text-sm font-light">Bloquez votre date en quelques clics. Le règlement s'effectue directement sur place le jour de l'événement.</p>
             </div>
             
             <form id="bookingForm" class="space-y-6">
@@ -294,25 +294,30 @@
                         <input type="email" id="formEmail" required placeholder="jean@example.com" class="w-full px-4 py-3 rounded-xl bg-coxCream border border-stone-200 text-sm focus:outline-none focus:ring-1 focus:ring-amber-800 focus:bg-white transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider mb-2 text-stone-700">Date du Mariage</label>
+                        <label class="block text-xs font-semibold uppercase tracking-wider mb-2 text-stone-700">Date du Mariage / Événement</label>
                         <input type="date" id="formDate" required class="w-full px-4 py-3 rounded-xl bg-coxCream border border-stone-200 text-sm focus:outline-none focus:ring-1 focus:ring-amber-800 focus:bg-white transition">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider mb-2 text-stone-700">Lieu du Mariage (Ville / Domaine)</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wider mb-2 text-stone-700">Lieu de l'événement (Ville / Domaine)</label>
                     <input type="text" id="formCity" required placeholder="Ex: Lille, Arras, Domaine de..." class="w-full px-4 py-3 rounded-xl bg-coxCream border border-stone-200 text-sm focus:outline-none focus:ring-1 focus:ring-amber-800 focus:bg-white transition">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider mb-2 text-stone-700">Précisions & Formule souhaitée</label>
-                    <textarea id="formMessage" rows="4" placeholder="Indiquez la formule envisagée (Demi-journée ou Journée complète) ainsi que vos besoins particuliers..." class="w-full px-4 py-3 rounded-xl bg-coxCream border border-stone-200 text-sm focus:outline-none focus:ring-1 focus:ring-amber-800 focus:bg-white transition"></textarea>
+                    <textarea id="formMessage" rows="4" placeholder="Indiquez la formule souhaitée (Demi-journée ou Journée complète) ainsi que vos détails d'organisation..." class="w-full px-4 py-3 rounded-xl bg-coxCream border border-stone-200 text-sm focus:outline-none focus:ring-1 focus:ring-amber-800 focus:bg-white transition"></textarea>
                 </div>
+
+                <div class="p-4 bg-amber-50 rounded-xl border border-amber-200/60 text-xs text-amber-900 leading-relaxed">
+                    💵 <strong>Paiement sur place :</strong> Aucun paiement en ligne n'est requis. La réservation sera confirmée par téléphone/email et le règlement se fera directement sur place en espèces ou chèque.
+                </div>
+
                 <button type="submit" id="btnSubmitBooking" class="w-full bg-amber-700 text-white font-semibold text-xs uppercase tracking-widest py-4 rounded-xl hover:bg-amber-800 transition duration-200 shadow-md flex justify-center items-center">
-                    <span>Envoyer la demande</span>
+                    <span>Confirmer la réservation (Paiement sur place)</span>
                 </button>
             </form>
             
             <div id="formSuccess" class="hidden text-center py-6 text-emerald-900 font-semibold bg-emerald-50 rounded-2xl border border-emerald-200 mt-6 toast-animate text-sm">
-                Votre demande a été transmise avec succès. Nous vous recontactons dans les plus brefs délais.
+                Votre réservation a bien été enregistrée. Nous vous contacterons rapidement pour valider les derniers détails !
             </div>
         </div>
     </section>
